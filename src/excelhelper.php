@@ -70,6 +70,13 @@ class excelhelper
         if ($args['engine'] === 'phpspreadsheet') {
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
+
+            // left align all
+            $sheet
+                ->getStyle('A1:' . ($sheet->getHighestColumn() . $sheet->getHighestRow()))
+                ->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+
             foreach ($args['data'] as $data__key => $data__value) {
                 $row = $data__key + 1;
                 foreach ($data__value as $data__value__key => $data__value__value) {
@@ -141,25 +148,27 @@ class excelhelper
                     }
                 }
             }
+
             if ($args['style_header'] === true) {
                 $sheet
-                    ->getStyle('A1:' . $this->phpexcel_objPHPExcel->getActiveSheet()->getHighestColumn() . '1')
+                    ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
                     ->getFont()
                     ->setBold(true);
                 $sheet
-                    ->getStyle('A1:' . $this->phpexcel_objPHPExcel->getActiveSheet()->getHighestColumn() . '1')
+                    ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
                     ->getAlignment()
-                    ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
                 $sheet
-                    ->getStyle('A1:' . $this->phpexcel_objPHPExcel->getActiveSheet()->getHighestColumn() . '1')
+                    ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
                     ->getAlignment()
-                    ->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+                    ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
                 $sheet
-                    ->getStyle('A1:' . $this->phpexcel_objPHPExcel->getActiveSheet()->getHighestColumn() . '1')
+                    ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
                     ->getAlignment()
                     ->setWrapText(true);
                 $sheet->getRowDimension('1')->setRowHeight(40);
             }
+
             if ($args['autosize_columns'] === true) {
                 // first set columns to auto size
                 $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
@@ -180,6 +189,45 @@ class excelhelper
                 }
                 $sheet->calculateColumnWidths();
             }
+
+            if ($args['auto_borders'] === true) {
+                $sheet->getStyle('A1:' . ($sheet->getHighestColumn() . $sheet->getHighestRow()))->applyFromArray([
+                    'borders' => [
+                        'allborders' => ['style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]
+                    ]
+                ]);
+            }
+
+            // format some data as text (long numbers)
+            for ($row = 1; $row <= $sheet->getHighestRow(); $row++) {
+                $toCol = $sheet->getHighestColumn();
+                $toCol++;
+                for ($col = 'A'; $col != $toCol; $col++) {
+                    $val = $sheet->getCell($col . $row)->getValue();
+                    if (is_numeric($val) && strlen($val) > 10) {
+                        $sheet->getCell($col . $row)->setValueExplicit($sheet->getCell($col . $row)->getValue(), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    }
+                }
+            }
+            // format some data as currency
+            for ($row = 1; $row <= $sheet->getHighestRow(); $row++) {
+                $toCol = $sheet->getHighestColumn();
+                $toCol++;
+                for ($col = 'A'; $col != $toCol; $col++) {
+                    if (strpos($sheet->getCell($col . $row)->getValue(), '€') !== false) {
+                        // convert in float
+                        $sheet
+                            ->getCell($col . $row)
+                            ->setValueExplicit(floatval(str_replace('€', '', str_replace(',', '.', $sheet->getCell($col . $row)->getValue()))), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                        // format as euro
+                        $sheet
+                            ->getStyle($col . $row)
+                            ->getNumberFormat()
+                            ->setFormatCode('#,##0.00€');
+                    }
+                }
+            }
+
             $writer = new Xlsx($spreadsheet);
             if ($args['output'] === 'save') {
                 $writer->save($args['file']);
@@ -214,6 +262,9 @@ class excelhelper
         }
         if (!array_key_exists('autosize_columns', $args) || $args['autosize_columns'] === null) {
             $args['autosize_columns'] = true;
+        }
+        if (!array_key_exists('auto_borders', $args) || $args['auto_borders'] === null) {
+            $args['auto_borders'] = true;
         }
         if (!array_key_exists('data', $args) || $args['data'] === null) {
             $args['data'] = [];

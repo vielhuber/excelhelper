@@ -2,7 +2,7 @@
 
 excelhelper is a helper for excel.
 
-with its help you can write and read to xlsx/xls/csv in php in a very simple way.
+with its help you can write and read to xlsx/xls/csv in php in a very simple, webdev-friendly way.
 
 ## installation
 
@@ -41,6 +41,7 @@ excelhelper::write([
     'output' => 'save', // save|download
     'style_header' => true, // true|false
     'autosize_columns' => true, // true|false
+    'auto_borders' => true, // true|false
     'data' => [
         ['a1','b1','c1'],
         ['a2','b2','c2'],
