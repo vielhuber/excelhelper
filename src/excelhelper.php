@@ -211,7 +211,7 @@ class excelhelper
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                            'color' => ['rgb' => '000000'],
+                            'color' => ['rgb' => '000000']
                         ]
                     ]
                 ]);
