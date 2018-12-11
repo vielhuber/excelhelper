@@ -1,7 +1,10 @@
 {
     "name": "vielhuber/excelhelper",
     "description": "A super simple excel wrapper in php.",
-    "require": { "php": ">=5.6" },
+    "require": {
+        "php": ">=5.6",
+        "phpoffice/phpspreadsheet": "^1.5"
+    },
     "license": "MIT",
     "autoload": {
         "psr-4": {
