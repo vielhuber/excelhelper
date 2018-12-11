@@ -71,12 +71,6 @@ class excelhelper
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
-            // left align all
-            $sheet
-                ->getStyle('A1:' . ($sheet->getHighestColumn() . $sheet->getHighestRow()))
-                ->getAlignment()
-                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-
             foreach ($args['data'] as $data__key => $data__value) {
                 $row = $data__key + 1;
                 foreach ($data__value as $data__value__key => $data__value__value) {
@@ -166,7 +160,7 @@ class excelhelper
                     ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
                     ->getAlignment()
                     ->setWrapText(true);
-                $sheet->getRowDimension('1')->setRowHeight(40);
+                $sheet->getRowDimension('1')->setRowHeight(45);
             }
 
             if ($args['autosize_columns'] === true) {
@@ -184,7 +178,7 @@ class excelhelper
                     $calculatedWidth = $sheet->getColumnDimension($i)->getWidth();
                     $sheet
                         ->getColumnDimension($i)
-                        ->setWidth((int) $calculatedWidth * 1.5)
+                        ->setWidth((int) $calculatedWidth * 1.1)
                         ->setAutoSize(false);
                 }
                 $sheet->calculateColumnWidths();
@@ -196,7 +190,7 @@ class excelhelper
                     $calculatedWidth = $sheet->getColumnDimension($i)->getWidth();
                     $sheet
                         ->getColumnDimension($i)
-                        ->setWidth(100)
+                        ->setWidth(30)
                         ->setAutoSize(false);
                 }
                 $sheet->calculateColumnWidths();
@@ -218,6 +212,10 @@ class excelhelper
                     $val = $sheet->getCell($col . $row)->getValue();
                     if (is_numeric($val) && strlen($val) > 10) {
                         $sheet->getCell($col . $row)->setValueExplicit($sheet->getCell($col . $row)->getValue(), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet
+                            ->getStyle($col . $row)
+                            ->getAlignment()
+                            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
                     }
                 }
             }
@@ -236,6 +234,10 @@ class excelhelper
                             ->getStyle($col . $row)
                             ->getNumberFormat()
                             ->setFormatCode('#,##0.00€');
+                        $sheet
+                            ->getStyle($col . $row)
+                            ->getAlignment()
+                            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
                     }
                 }
             }
