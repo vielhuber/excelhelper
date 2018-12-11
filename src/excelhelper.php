@@ -151,6 +151,7 @@ class excelhelper
                 header('Cache-Control: max-age=0');
                 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
                 $writer->save('php://output');
+                die();
             }
         }
         if ($args['engine'] === 'spout') {
