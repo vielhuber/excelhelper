@@ -7,7 +7,7 @@ class Test extends \PHPUnit\Framework\TestCase
     {
         $data = [
             ['a1', 'b1', 'c1'],
-            ['a2', 'b2', 'c2'],
+            ['a2', 'b2', '374862376723'],
             [
                 ['value' => 'a3', 'background-color' => '#ff0000', 'color' => '#ffffff', 'font-weight' => 'bold', 'border' => '1px solid #000', 'text-align' => 'center'],
                 ['value' => 'b3', 'background-color' => '#ff0000', 'color' => '#ffffff', 'font-weight' => 'bold', 'border' => '1px solid #000', 'text-align' => 'left'],
@@ -18,6 +18,8 @@ class Test extends \PHPUnit\Framework\TestCase
             'file' => 'tests/test.xlsx',
             'engine' => 'phpspreadsheet',
             'output' => 'save',
+            'style_header' => true,
+            'autosize_columns' => true,
             'data' => $data
         ]);
         $array = excelhelper::read([

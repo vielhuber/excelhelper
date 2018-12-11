@@ -141,6 +141,45 @@ class excelhelper
                     }
                 }
             }
+            if ($args['style_header'] === true) {
+                $sheet
+                    ->getStyle('A1:' . $this->phpexcel_objPHPExcel->getActiveSheet()->getHighestColumn() . '1')
+                    ->getFont()
+                    ->setBold(true);
+                $sheet
+                    ->getStyle('A1:' . $this->phpexcel_objPHPExcel->getActiveSheet()->getHighestColumn() . '1')
+                    ->getAlignment()
+                    ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+                $sheet
+                    ->getStyle('A1:' . $this->phpexcel_objPHPExcel->getActiveSheet()->getHighestColumn() . '1')
+                    ->getAlignment()
+                    ->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+                $sheet
+                    ->getStyle('A1:' . $this->phpexcel_objPHPExcel->getActiveSheet()->getHighestColumn() . '1')
+                    ->getAlignment()
+                    ->setWrapText(true);
+                $sheet->getRowDimension('1')->setRowHeight(40);
+            }
+            if ($args['autosize_columns'] === true) {
+                // first set columns to auto size
+                $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
+                $toCol++;
+                for ($i = 'A'; $i !== $toCol; $i++) {
+                    $sheet->getColumnDimension($i)->setAutoSize(true);
+                }
+                $sheet->calculateColumnWidths();
+                // increase columns by little padding
+                $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
+                $toCol++;
+                for ($i = 'A'; $i !== $toCol; $i++) {
+                    $calculatedWidth = $sheet->getColumnDimension($i)->getWidth();
+                    $sheet
+                        ->getColumnDimension($i)
+                        ->setWidth((int) $calculatedWidth * 1.5)
+                        ->setAutoSize(false);
+                }
+                $sheet->calculateColumnWidths();
+            }
             $writer = new Xlsx($spreadsheet);
             if ($args['output'] === 'save') {
                 $writer->save($args['file']);
@@ -169,6 +208,12 @@ class excelhelper
         }
         if (!array_key_exists('output', $args) || $args['output'] === null) {
             $args['output'] = 'save';
+        }
+        if (!array_key_exists('style_header', $args) || $args['style_header'] === null) {
+            $args['style_header'] = false;
+        }
+        if (!array_key_exists('autosize_columns', $args) || $args['autosize_columns'] === null) {
+            $args['autosize_columns'] = true;
         }
         if (!array_key_exists('data', $args) || $args['data'] === null) {
             $args['data'] = [];

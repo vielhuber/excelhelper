@@ -22,6 +22,7 @@ use vielhuber\excelhelper\excelhelper;
 ## usage
 
 ### reading
+
 ```php
 $array = excelhelper::read([
     'file' => 'file.xlsx',
@@ -32,13 +33,16 @@ $array = excelhelper::read([
 ```
 
 ### writing
+
 ```php
 excelhelper::write([
     'file' => 'file.xlsx', // can write xlsx, xls and csv
     'engine' => 'phpspreadsheet', // phpspreadsheet|spout
     'output' => 'save', // save|download
+    'style_header' => true, // true|false
+    'autosize_columns' => true, // true|false
     'data' => [
-        ['a1','b1','c1'],  
+        ['a1','b1','c1'],
         ['a2','b2','c2'],
         [
           ['value' => 'a3', 'background-color': '#ff0000', 'color': '#ffffff', 'font-weight': 'bold', 'border': '1px solid #000', 'text-align': 'center'],
