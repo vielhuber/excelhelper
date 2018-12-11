@@ -160,16 +160,16 @@ class excelhelper
     private static function prepareWriteArgs($args)
     {
         // default values
-        if (!array_key_exists('file', $args)) {
+        if (!array_key_exists('file', $args) || $args['file'] === null) {
             $args['file'] = 'output-' . date('Y-m-d-H:i:s') . '.xlsx';
         }
-        if (!array_key_exists('engine', $args)) {
+        if (!array_key_exists('engine', $args) || $args['engine'] === null) {
             $args['engine'] = 'phpspreadsheet';
         }
-        if (!array_key_exists('output', $args)) {
+        if (!array_key_exists('output', $args) || $args['output'] === null) {
             $args['output'] = 'save';
         }
-        if (!array_key_exists('data', $args)) {
+        if (!array_key_exists('data', $args) || $args['data'] === null) {
             $args['data'] = [];
         }
         // checks
