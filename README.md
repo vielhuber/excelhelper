@@ -19,7 +19,7 @@ require __DIR__.'/vendor/autoload.php';
 use vielhuber\excelhelper\excelhelper;
 ```
 
-## isage
+## usage
 
 ### reading
 ```php
@@ -34,8 +34,8 @@ $array = excelhelper::read([
 ### writing
 ```php
 excelhelper::write([
-    'engine' => 'phpspreadsheet', // phpspreadsheet|spout
     'file' => 'file.xlsx', // can write xlsx, xls and csv
+    'engine' => 'phpspreadsheet', // phpspreadsheet|spout
     'output' => 'save', // save|download
     'data' => [
         ['a1','b1','c1'],  
