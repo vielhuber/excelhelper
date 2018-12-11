@@ -2,6 +2,8 @@
 
 excelhelper is a helper for excel.
 
+with its help you can write and read to xlsx/xls/csv in php in a very simple way.
+
 ## Installation
 
 install once with [composer](https://getcomposer.org/):
@@ -19,6 +21,17 @@ use vielhuber\excelhelper\excelhelper;
 
 ## Usage
 
+### reading
+```
+$array = excelhelper::read([
+    'file' => 'file.xlsx',
+    'first_line' => true, // true|false
+    'format_cells' => false, // false|true
+    'all_sheets' => false, // false|true
+]);
+```
+
+### writing
 ```php
 excelhelper::write([
     'engine' => 'phpspreadsheet', // phpspreadsheet|spout
@@ -33,12 +46,5 @@ excelhelper::write([
           ['value' => 'c3', 'background-color': '#ff0000', 'color': '#ffffff', 'font-weight': 'bold', 'border': '1px solid #000', 'text-align': 'right'],
         ]
     ]
-]);
-
-excelhelper::read([
-    'file' => 'file.xlsx',
-    'first_line' => true, // true|false
-    'format_cells' => false, // false|true
-    'all_sheets' => false, // false|true
 ]);
 ```
