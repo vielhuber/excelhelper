@@ -77,6 +77,10 @@ class excelhelper
                     $col = self::int2char($data__value__key + 1);
                     if (!is_array($data__value__value)) {
                         $sheet->setCellValue($col . $row, $data__value__value);
+                        $sheet
+                            ->getStyle($col . $row)
+                            ->getAlignment()
+                            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
                     } else {
                         if (array_key_exists('value', $data__value__value)) {
                             $sheet->setCellValue($col . $row, $data__value__value['value']);
@@ -116,6 +120,12 @@ class excelhelper
                                 ->getStyle($col . $row)
                                 ->getAlignment()
                                 ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                        }
+                        if (!array_key_exists('text-align', $data__value__value) || $data__value__value['text-align'] === 'left') {
+                            $sheet
+                                ->getStyle($col . $row)
+                                ->getAlignment()
+                                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
                         }
                         if (array_key_exists('border', $data__value__value)) {
                             $sheet
@@ -160,7 +170,7 @@ class excelhelper
                     ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
                     ->getAlignment()
                     ->setWrapText(true);
-                $sheet->getRowDimension('1')->setRowHeight(45);
+                $sheet->getRowDimension('1')->setRowHeight(60);
             }
 
             if ($args['autosize_columns'] === true) {
@@ -199,7 +209,10 @@ class excelhelper
             if ($args['auto_borders'] === true) {
                 $sheet->getStyle('A1:' . ($sheet->getHighestColumn() . $sheet->getHighestRow()))->applyFromArray([
                     'borders' => [
-                        'allborders' => ['style' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN]
+                        'allBorders' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['rgb' => '000000'],
+                        ]
                     ]
                 ]);
             }
