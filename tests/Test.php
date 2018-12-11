@@ -19,7 +19,7 @@ class Test extends \PHPUnit\Framework\TestCase
             'engine' => 'phpspreadsheet',
             'output' => 'save',
             'style_header' => true,
-            'autosize_columns' => true,
+            'autosize_columns' => false,
             'data' => $data
         ]);
         $array = excelhelper::read([

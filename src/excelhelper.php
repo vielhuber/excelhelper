@@ -189,6 +189,18 @@ class excelhelper
                 }
                 $sheet->calculateColumnWidths();
             }
+            if ($args['autosize_columns'] === false) {
+                $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
+                $toCol++;
+                for ($i = 'A'; $i !== $toCol; $i++) {
+                    $calculatedWidth = $sheet->getColumnDimension($i)->getWidth();
+                    $sheet
+                        ->getColumnDimension($i)
+                        ->setWidth(100)
+                        ->setAutoSize(false);
+                }
+                $sheet->calculateColumnWidths();
+            }
 
             if ($args['auto_borders'] === true) {
                 $sheet->getStyle('A1:' . ($sheet->getHighestColumn() . $sheet->getHighestRow()))->applyFromArray([
