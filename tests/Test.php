@@ -7,7 +7,7 @@ class Test extends \PHPUnit\Framework\TestCase
     {
         $data = [
             ['a1', 'b1', 'c1'],
-            ['a2', '200€', '374862376723'],
+            ['a2', '200€', '1049090014867191'],
             [
                 ['value' => 'a3', 'background-color' => '#ff0000', 'color' => '#ffffff', 'font-weight' => 'bold', 'border' => '1px solid #000', 'text-align' => 'center'],
                 ['value' => 'b3', 'background-color' => '#ff0000', 'color' => '#ffffff', 'font-weight' => 'bold', 'border' => '1px solid #000', 'text-align' => 'left'],
@@ -28,6 +28,6 @@ class Test extends \PHPUnit\Framework\TestCase
             'format_cells' => false,
             'all_sheets' => false
         ]);
-        $this->assertEquals($array, [['a1', 'b1', 'c1'], ['a2', '200', '374862376723'], ['a3', 'b3', 'c3']]);
+        $this->assertEquals($array, [['a1', 'b1', 'c1'], ['a2', '200', '1049090014867191'], ['a3', 'b3', 'c3']]);
     }
 }

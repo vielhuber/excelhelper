@@ -3,6 +3,7 @@
 excelhelper is a helper for excel.
 
 with its help you can write and read to xlsx/xls/csv in php in a very simple, webdev-friendly way.
+it also handles issues with big numbers and other quirks.
 
 ## installation
 

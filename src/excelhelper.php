@@ -45,6 +45,9 @@ class excelhelper
         if (!array_key_exists('format_cells', $args)) {
             $args['format_cells'] = false;
         }
+        if (!array_key_exists('convert_bignumbers', $args)) {
+            $args['convert_bignumbers'] = true;
+        }
         if (!array_key_exists('all_sheets', $args)) {
             $args['all_sheets'] = false;
         }
@@ -57,6 +60,9 @@ class excelhelper
         }
         if (!in_array($args['format_cells'], [true, false])) {
             throw new \Exception('unknown format_cells');
+        }
+        if (!in_array($args['convert_bignumbers'], [true, false])) {
+            throw new \Exception('unknown convert_bignumbers');
         }
         if (!in_array($args['all_sheets'], [true, false])) {
             throw new \Exception('unknown all_sheets');
@@ -76,6 +82,11 @@ class excelhelper
                 foreach ($data__value as $data__value__key => $data__value__value) {
                     $col = self::int2char($data__value__key + 1);
                     if (!is_array($data__value__value)) {
+                        /* big numbers */
+                        if( is_numeric($data__value__value) && strlen($data__value__value) > 10 )
+                        {
+                            $data__value__value = '\''.$data__value__value;
+                        }
                         $sheet->setCellValue($col . $row, $data__value__value);
                         $sheet
                             ->getStyle($col . $row)
@@ -83,6 +94,11 @@ class excelhelper
                             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
                     } else {
                         if (array_key_exists('value', $data__value__value)) {
+                            /* big numbers */
+                            if( is_numeric($data__value__value['value']) && strlen($data__value__value['value']) > 10 )
+                            {
+                                $data__value__value['value'] = '\''.$data__value__value['value'];
+                            }
                             $sheet->setCellValue($col . $row, $data__value__value['value']);
                         }
                         if (array_key_exists('background-color', $data__value__value)) {
@@ -223,15 +239,13 @@ class excelhelper
                 $toCol++;
                 for ($col = 'A'; $col != $toCol; $col++) {
                     $val = $sheet->getCell($col . $row)->getValue();
-                    if (is_numeric($val) && strlen($val) > 10) {
-                        $sheet->getCell($col . $row)->setValueExplicit($sheet->getCell($col . $row)->getValue(), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-                        $sheet
-                            ->getStyle($col . $row)
-                            ->getAlignment()
-                            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+                    if (strpos($val, '\'') === 0 && is_numeric(str_replace('\'','',$val)) && strlen($val) > 10) {
+                        $sheet->getCell($col . $row)->setValueExplicit(str_replace('\'','',$val), \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                        $sheet->getStyle($col . $row)->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
                     }
                 }
             }
+
             // format some data as currency
             for ($row = 1; $row <= $sheet->getHighestRow(); $row++) {
                 $toCol = $sheet->getHighestColumn();
