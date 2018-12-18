@@ -33,6 +33,22 @@ class excelhelper
                 $array = array_merge($array, $array_part);
             }
         }
+
+
+        if( $args['friendly_keys'] === true )
+        {
+            $array_friendly = [];
+            foreach($array as $array__key=>$array__value)
+            {
+                $array_friendly[$array__key+1] = [];
+                foreach($array__value as $array__value__key=>$array__value__value)
+                {
+                    $array_friendly[$array__key+1][self::int2char($array__value__key+1)] = $array__value__value;
+                }
+            }
+            $array = $array_friendly;
+        }
+
         return $array;
     }
 
@@ -51,6 +67,9 @@ class excelhelper
         if (!array_key_exists('all_sheets', $args)) {
             $args['all_sheets'] = false;
         }
+        if (!array_key_exists('friendly_keys', $args)) {
+            $args['friendly_keys'] = true;
+        }
         // checks
         if (!isset($args['file']) && !file_exists($args['file'])) {
             throw new \Exception('file missing');
@@ -66,6 +85,9 @@ class excelhelper
         }
         if (!in_array($args['all_sheets'], [true, false])) {
             throw new \Exception('unknown all_sheets');
+        }
+        if (!in_array($args['friendly_keys'], [true, false])) {
+            throw new \Exception('unknown friendly_keys');
         }
         return $args;
     }

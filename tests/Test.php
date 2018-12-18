@@ -26,8 +26,19 @@ class Test extends \PHPUnit\Framework\TestCase
             'file' => 'tests/test.xlsx',
             'first_line' => true,
             'format_cells' => false,
-            'all_sheets' => false
+            'all_sheets' => false,
+            'friendly_keys' => false
         ]);
         $this->assertEquals($array, [['a1', 'b1', 'c1'], ['a2', '200', '1049090014867191'], ['a3', 'b3', 'c3']]);
+        $array = excelhelper::read([
+            'file' => 'tests/test.xlsx',
+            'first_line' => true,
+            'format_cells' => false,
+            'all_sheets' => false,
+            'friendly_keys' => true
+        ]);
+        $this->assertEquals($array, [1 => ['A' => 'a1', 'B' => 'b1', 'C' => 'c1'], 2 => ['A' => 'a2', 'B' => '200', 'C' => '1049090014867191'], 3 => ['A' => 'a3', 'B' => 'b3', 'C' => 'c3']]);
+
+
     }
 }

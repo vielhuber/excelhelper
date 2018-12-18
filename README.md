@@ -30,6 +30,7 @@ $array = excelhelper::read([
     'first_line' => true, // true|false
     'format_cells' => false, // false|true
     'all_sheets' => false, // false|true
+    'friendly_keys' => false, // false|true
 ]);
 ```
 
