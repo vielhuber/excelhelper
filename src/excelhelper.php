@@ -360,9 +360,7 @@ class excelhelper
             }
 
             $writer = new Xlsx($spreadsheet);
-            if ($args['output'] === 'save') {
-                $writer->save($args['file']);
-            }
+
             if ($args['output'] === 'download') {
                 header(
                     'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -370,7 +368,13 @@ class excelhelper
                 header('Content-Disposition: attachment;filename="' . $args['file'] . '"');
                 header('Cache-Control: max-age=0');
                 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-                $writer->save('php://output');
+            }
+            try {
+                $writer->save($args['output'] === 'save' ? $args['file'] : 'php://output');
+            } catch (\Exception $e) {
+                throw new \Exception($e->getMessage());
+            }
+            if ($args['output'] === 'download') {
                 die();
             }
         }

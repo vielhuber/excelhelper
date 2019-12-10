@@ -77,7 +77,7 @@ class Test extends \PHPUnit\Framework\TestCase
             'remove_empty_cols' => true,
             'data' => [
                 [3 => 'foo', 7 => 'bar', 12 => '', 14 => '...'],
-                [4 => 'bar', 9 => 'baz', 11 => '', 13 => '...']
+                [4 => 'bar', 9 => '=2+2', 11 => '', 13 => '...']
             ]
         ]);
         $array = excelhelper::read([
@@ -89,7 +89,7 @@ class Test extends \PHPUnit\Framework\TestCase
         ]);
         $this->assertEquals($array, [
             1 => ['A' => 'foo', 'B' => 'bar', 'C' => '...'],
-            2 => ['A' => 'bar', 'B' => 'baz', 'C' => '...']
+            2 => ['A' => 'bar', 'B' => 4, 'C' => '...']
         ]);
     }
 }
