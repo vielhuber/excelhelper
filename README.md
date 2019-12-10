@@ -16,7 +16,7 @@ composer require vielhuber/excelhelper
 then add this to your files:
 
 ```php
-require __DIR__.'/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 use vielhuber\excelhelper\excelhelper;
 ```
 
@@ -30,7 +30,7 @@ $array = excelhelper::read([
     'first_line' => true, // true|false
     'format_cells' => false, // false|true
     'all_sheets' => false, // false|true
-    'friendly_keys' => false, // false|true
+    'friendly_keys' => false // false|true
 ]);
 ```
 
@@ -38,12 +38,13 @@ $array = excelhelper::read([
 
 ```php
 excelhelper::write([
-    'file' => 'file.xlsx', // can write xlsx, xls and csv
+    'file' => 'file.xlsx', // can write xlsx, xls and csv; if null, a filename is suggested
     'engine' => 'phpspreadsheet', // phpspreadsheet|spout
     'output' => 'save', // save|download
     'style_header' => true, // true|false
     'autosize_columns' => true, // true|false
     'auto_borders' => true, // true|false
+    'remove_empty_cols' => false, // true|false
     'data' => [
         ['a1','b1','c1'],
         ['a2','b2','c2'],
