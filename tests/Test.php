@@ -10,7 +10,7 @@ class Test extends \PHPUnit\Framework\TestCase
             ['a2', '200€', '1049090014867191'],
             [
                 [
-                    'value' => 'a3',
+                    'value' => 'ca. 200,00 €',
                     'background-color' => '#ff0000',
                     'color' => '#ffffff',
                     'font-weight' => 'bold',
@@ -18,7 +18,7 @@ class Test extends \PHPUnit\Framework\TestCase
                     'text-align' => 'center'
                 ],
                 [
-                    'value' => 'b3',
+                    'value' => '200,50€',
                     'background-color' => '#ff0000',
                     'color' => '#ffffff',
                     'font-weight' => 'bold',
@@ -26,7 +26,7 @@ class Test extends \PHPUnit\Framework\TestCase
                     'text-align' => 'left'
                 ],
                 [
-                    'value' => 'c3',
+                    'value' => '200.50€',
                     'background-color' => '#ff0000',
                     'color' => '#ffffff',
                     'font-weight' => 'bold',
@@ -53,7 +53,7 @@ class Test extends \PHPUnit\Framework\TestCase
         $this->assertEquals($array, [
             ['a1', 'b1', 'c1'],
             ['a2', '200', '1049090014867191'],
-            ['a3', 'b3', 'c3']
+            ['ca. 200,00 €', '200.50', '200.50']
         ]);
         $array = excelhelper::read([
             'file' => 'tests/test.xlsx',
@@ -65,7 +65,7 @@ class Test extends \PHPUnit\Framework\TestCase
         $this->assertEquals($array, [
             1 => ['A' => 'a1', 'B' => 'b1', 'C' => 'c1'],
             2 => ['A' => 'a2', 'B' => '200', 'C' => '1049090014867191'],
-            3 => ['A' => 'a3', 'B' => 'b3', 'C' => 'c3']
+            3 => ['A' => 'ca. 200,00 €', 'B' => '200.50', 'C' => '200.50']
         ]);
 
         excelhelper::write([

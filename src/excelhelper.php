@@ -326,7 +326,7 @@ class excelhelper
                 $toCol = $sheet->getHighestColumn();
                 $toCol++;
                 for ($col = 'A'; $col != $toCol; $col++) {
-                    if (strpos($sheet->getCell($col . $row)->getValue(), '€') !== false) {
+                    if( preg_match('/^(\d|,|\.| )+€$/', $sheet->getCell($col . $row)->getValue()) ) {
                         // convert in float
                         $sheet
                             ->getCell($col . $row)
@@ -338,7 +338,11 @@ class excelhelper
                                         str_replace(
                                             ',',
                                             '.',
-                                            $sheet->getCell($col . $row)->getValue()
+                                            str_replace(
+                                                ' ',
+                                                '',
+                                                $sheet->getCell($col . $row)->getValue()
+                                            )
                                         )
                                     )
                                 ),
