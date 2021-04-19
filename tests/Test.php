@@ -91,5 +91,26 @@ class Test extends \PHPUnit\Framework\TestCase
             1 => ['A' => 'foo', 'B' => 'bar', 'C' => '...'],
             2 => ['A' => 'bar', 'B' => 4, 'C' => '...']
         ]);
+
+        $array = excelhelper::read([
+            'file' => 'tests/multi.xlsx',
+            'first_line' => true,
+            'format_cells' => false,
+            'all_sheets' => false,
+            'friendly_keys' => false
+        ]);
+        $this->assertEquals($array, [['a', 'b', 'c']]);
+        $array = excelhelper::read([
+            'file' => 'tests/multi.xlsx',
+            'first_line' => true,
+            'format_cells' => false,
+            'all_sheets' => true,
+            'friendly_keys' => false
+        ]);
+        $this->assertEquals($array, [
+            'foo' => [['a', 'b', 'c']],
+            'bar' => [['d', 'e', 'f']],
+            'baz' => [['g', 'h', 'i']]
+        ]);
     }
 }

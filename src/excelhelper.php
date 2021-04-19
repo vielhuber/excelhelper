@@ -11,7 +11,7 @@ class excelhelper
     {
         $args = self::prepareReadArgs($args);
 
-        $array = [];
+        $sheets = [];
         $filetype = IOFactory::identify($args['file']);
         $reader = IOFactory::createReader($filetype);
         $spreadsheet = $reader->load($args['file']);
@@ -23,31 +23,36 @@ class excelhelper
                 unset($array[0]);
                 $array = array_values($array);
             }
+            $sheets[$sheet->getTitle()] = $array;
         } else {
             foreach ($spreadsheet->getWorksheetIterator() as $sheet_nr => $sheet) {
-                $array_part = $sheet->toArray(null, true, $args['format_cells']);
+                $array = $sheet->toArray(null, true, $args['format_cells']);
                 if ($args['first_line'] === false) {
-                    unset($array_part[0]);
-                    $array_part = array_values($array_part);
+                    unset($array[0]);
+                    $array = array_values($array);
                 }
-                $array = array_merge($array, $array_part);
+                $sheets[$sheet->getTitle()] = $array;
             }
         }
 
         if ($args['friendly_keys'] === true) {
-            $array_friendly = [];
-            foreach ($array as $array__key => $array__value) {
-                $array_friendly[$array__key + 1] = [];
-                foreach ($array__value as $array__value__key => $array__value__value) {
-                    $array_friendly[$array__key + 1][
-                        self::int2char($array__value__key + 1)
-                    ] = $array__value__value;
+            foreach ($sheets as $sheets__key => $array) {
+                $array_friendly = [];
+                foreach ($array as $array__key => $array__value) {
+                    $array_friendly[$array__key + 1] = [];
+                    foreach ($array__value as $array__value__key => $array__value__value) {
+                        $array_friendly[$array__key + 1][self::int2char($array__value__key + 1)] = $array__value__value;
+                    }
                 }
+                $sheets[$sheets__key] = $array_friendly;
             }
-            $array = $array_friendly;
         }
 
-        return $array;
+        if (count($sheets) <= 1) {
+            $sheets = $sheets[array_key_first($sheets)];
+        }
+
+        return $sheets;
     }
 
     private static function prepareReadArgs($args)
@@ -110,16 +115,11 @@ class excelhelper
                         $sheet
                             ->getStyle($col . $row)
                             ->getAlignment()
-                            ->setHorizontal(
-                                \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT
-                            );
+                            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
                     } else {
                         if (array_key_exists('value', $data__value__value)) {
                             /* big numbers */
-                            if (
-                                is_numeric($data__value__value['value']) &&
-                                strlen($data__value__value['value']) > 10
-                            ) {
+                            if (is_numeric($data__value__value['value']) && strlen($data__value__value['value']) > 10) {
                                 $data__value__value['value'] = '\'' . $data__value__value['value'];
                             }
                             $sheet->setCellValue($col . $row, $data__value__value['value']);
@@ -133,23 +133,14 @@ class excelhelper
                                 ->getStyle($col . $row)
                                 ->getFill()
                                 ->getStartColor()
-                                ->setARGB(
-                                    '00' .
-                                        str_replace(
-                                            '#',
-                                            '',
-                                            $data__value__value['background-color']
-                                        )
-                                );
+                                ->setARGB('00' . str_replace('#', '', $data__value__value['background-color']));
                         }
                         if (array_key_exists('color', $data__value__value)) {
                             $sheet
                                 ->getStyle($col . $row)
                                 ->getFont()
                                 ->getColor()
-                                ->setARGB(
-                                    '00' . str_replace('#', '', $data__value__value['color'])
-                                );
+                                ->setARGB('00' . str_replace('#', '', $data__value__value['color']));
                         }
                         if (
                             array_key_exists('font-weight', $data__value__value) &&
@@ -167,9 +158,7 @@ class excelhelper
                             $sheet
                                 ->getStyle($col . $row)
                                 ->getAlignment()
-                                ->setHorizontal(
-                                    \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
-                                );
+                                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
                         }
                         if (
                             array_key_exists('text-align', $data__value__value) &&
@@ -178,9 +167,7 @@ class excelhelper
                             $sheet
                                 ->getStyle($col . $row)
                                 ->getAlignment()
-                                ->setHorizontal(
-                                    \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT
-                                );
+                                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
                         }
                         if (
                             !array_key_exists('text-align', $data__value__value) ||
@@ -189,39 +176,29 @@ class excelhelper
                             $sheet
                                 ->getStyle($col . $row)
                                 ->getAlignment()
-                                ->setHorizontal(
-                                    \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT
-                                );
+                                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
                         }
                         if (array_key_exists('border', $data__value__value)) {
                             $sheet
                                 ->getStyle($col . $row)
                                 ->getBorders()
                                 ->getTop()
-                                ->setBorderStyle(
-                                    \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
-                                );
+                                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                             $sheet
                                 ->getStyle($col . $row)
                                 ->getBorders()
                                 ->getLeft()
-                                ->setBorderStyle(
-                                    \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
-                                );
+                                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                             $sheet
                                 ->getStyle($col . $row)
                                 ->getBorders()
                                 ->getBottom()
-                                ->setBorderStyle(
-                                    \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
-                                );
+                                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                             $sheet
                                 ->getStyle($col . $row)
                                 ->getBorders()
                                 ->getRight()
-                                ->setBorderStyle(
-                                    \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
-                                );
+                                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
                         }
                     }
                 }
@@ -281,17 +258,14 @@ class excelhelper
             }
 
             if ($args['auto_borders'] === true) {
-                $sheet
-                    ->getStyle('A1:' . ($sheet->getHighestColumn() . $sheet->getHighestRow()))
-                    ->applyFromArray([
-                        'borders' => [
-                            'allBorders' => [
-                                'borderStyle' =>
-                                    \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                                'color' => ['rgb' => '000000']
-                            ]
+                $sheet->getStyle('A1:' . ($sheet->getHighestColumn() . $sheet->getHighestRow()))->applyFromArray([
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                            'color' => ['rgb' => '000000']
                         ]
-                    ]);
+                    ]
+                ]);
             }
 
             // format some data as text (long numbers)
@@ -300,11 +274,7 @@ class excelhelper
                 $toCol++;
                 for ($col = 'A'; $col != $toCol; $col++) {
                     $val = $sheet->getCell($col . $row)->getValue();
-                    if (
-                        strpos($val, '\'') === 0 &&
-                        is_numeric(str_replace('\'', '', $val)) &&
-                        strlen($val) > 10
-                    ) {
+                    if (strpos($val, '\'') === 0 && is_numeric(str_replace('\'', '', $val)) && strlen($val) > 10) {
                         $sheet
                             ->getCell($col . $row)
                             ->setValueExplicit(
@@ -314,9 +284,7 @@ class excelhelper
                         $sheet
                             ->getStyle($col . $row)
                             ->getNumberFormat()
-                            ->setFormatCode(
-                                \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT
-                            );
+                            ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
                     }
                 }
             }
@@ -326,7 +294,7 @@ class excelhelper
                 $toCol = $sheet->getHighestColumn();
                 $toCol++;
                 for ($col = 'A'; $col != $toCol; $col++) {
-                    if( preg_match('/^(\d|,|\.| )+€$/', $sheet->getCell($col . $row)->getValue()) ) {
+                    if (preg_match('/^(\d|,|\.| )+€$/', $sheet->getCell($col . $row)->getValue())) {
                         // convert in float
                         $sheet
                             ->getCell($col . $row)
@@ -338,11 +306,7 @@ class excelhelper
                                         str_replace(
                                             ',',
                                             '.',
-                                            str_replace(
-                                                ' ',
-                                                '',
-                                                $sheet->getCell($col . $row)->getValue()
-                                            )
+                                            str_replace(' ', '', $sheet->getCell($col . $row)->getValue())
                                         )
                                     )
                                 ),
@@ -356,9 +320,7 @@ class excelhelper
                         $sheet
                             ->getStyle($col . $row)
                             ->getAlignment()
-                            ->setHorizontal(
-                                \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT
-                            );
+                            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
                     }
                 }
             }
@@ -366,9 +328,7 @@ class excelhelper
             $writer = new Xlsx($spreadsheet);
 
             if ($args['output'] === 'download') {
-                header(
-                    'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                );
+                header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
                 header('Content-Disposition: attachment;filename="' . $args['file'] . '"');
                 header('Cache-Control: max-age=0');
                 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
