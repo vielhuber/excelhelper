@@ -13,20 +13,11 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v3
 
-            - name: Install libraries
-              run: sudo apt-get install -y diffutils exiftool
-
-            - name: Install composer
-              uses: php-actions/composer@v6
+            - name: Composer
+            - uses: "shivammathur/setup-php@v2"
               with:
-                  php_version: "8.1"
-                  php_extensions: gd zip
-
-            - name: Dump autoload
-              uses: php-actions/composer@v6
-              with:
-                  command: dump-autoload
-                  only_args: --no-dev --no-interaction --classmap-authoritative
+                php-version: "latest"
+            - uses: "ramsey/composer-install@v2"
 
             - name: PHPUnit tests
               uses: php-actions/phpunit@v3
