@@ -112,6 +112,5 @@ class Test extends \PHPUnit\Framework\TestCase
             'bar' => [['d', 'e', 'f']],
             'baz' => [['g', 'h', 'i']]
         ]);
-        $this->assertEquals(true, false);
     }
 }
