@@ -12,7 +12,7 @@ jobs:
         strategy:
             matrix:
                 operating-system: [ubuntu-latest]
-                php-versions: ['7.4', '8.0', '8.1']
+                php-versions: ['8.1']
 
         name: ${{ matrix.operating-system }} (PHP ${{ matrix.php-versions }})
 
@@ -25,12 +25,11 @@ jobs:
               with:
                   version: latest
                   php_version: '${{ matrix.php-versions }}'
-                  php_extensions: mysqli xdebug mbstring xmlrpc gd intl xml zip soap bcmath imap opcache pgsql pdo imagick
-
+                  php_extensions: gd zip
 
             - name: PHPUnit tests
               uses: php-actions/phpunit@v3
               with:
                   version: latest
                   php_version: '${{ matrix.php-versions }}'
-                  php_extensions: mysqli xdebug mbstring xmlrpc gd intl xml zip soap bcmath imap opcache pgsql pdo imagick
+                  php_extensions: gd zip
