@@ -19,8 +19,6 @@ jobs:
             - name: Install composer
               uses: php-actions/composer@v6
               with:
-                  php_version: '8.1'
-                  version: 2.x
                   php_extensions: gd zip
 
             - name: PHPUnit tests
