@@ -24,6 +24,5 @@ jobs:
             - name: PHPUnit tests
               uses: php-actions/phpunit@v3
               with:
-                  php_version: "8.1"
                   php_extensions: gd zip
                   configuration: phpunit.xml
