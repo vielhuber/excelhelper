@@ -25,7 +25,7 @@ jobs:
               with:
                   version: latest
                   php_version: '${{ matrix.php-versions }}'
-                  php_extensions: gd
+                  php_extensions: mysql cli common xdebug mbstring xmlrpc gd intl xml mysql zip soap curl bcmath xml sqlite imap opcache pgsql pdo gd imagick
 
 
             - name: PHPUnit tests
@@ -33,4 +33,4 @@ jobs:
               with:
                   version: latest
                   php_version: '${{ matrix.php-versions }}'
-                  php_extensions: gd
+                  php_extensions: mysql cli common xdebug mbstring xmlrpc gd intl xml mysql zip soap curl bcmath xml sqlite imap opcache pgsql pdo gd imagick
