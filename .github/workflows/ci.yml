@@ -7,29 +7,23 @@ on: [push]
 
 jobs:
     build-test:
-        runs-on: ${{ matrix.operating-system }}
-
-        strategy:
-            matrix:
-                operating-system: [ubuntu-latest]
-                php-versions: ['8.1']
-
-        name: ${{ matrix.operating-system }} (PHP ${{ matrix.php-versions }})
+        runs-on: ubuntu-latest
 
         steps:
             - name: Checkout code
               uses: actions/checkout@v3
 
+            - name: Install libraries
+              run: sudo apt-get install -y diffutils exiftool
+
             - name: Install composer
               uses: php-actions/composer@v6
               with:
-                  version: latest
-                  php_version: '${{ matrix.php-versions }}'
+                  php_version: '8.1'
+                  version: 2.x
                   php_extensions: gd zip
 
             - name: PHPUnit tests
               uses: php-actions/phpunit@v3
               with:
-                  version: latest
-                  php_version: '${{ matrix.php-versions }}'
                   php_extensions: gd zip
