@@ -1,3 +1,5 @@
+[![build status](https://github.com/vielhuber/excelhelper/actions/workflows/ci.yml/badge.svg)](https://github.com/vielhuber/excelhelper/actions)
+
 # 📗 excelhelper 📗
 
 excelhelper is a helper for excel.
