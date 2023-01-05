@@ -25,3 +25,4 @@ jobs:
               uses: php-actions/phpunit@v3
               with:
                   php_extensions: gd zip
+                  configuration: phpunit.xml
