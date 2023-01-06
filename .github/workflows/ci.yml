@@ -11,22 +11,22 @@ jobs:
 
         strategy:
             matrix:
-                operating-system: ['ubuntu-latest']
+                operating-system: ['ubuntu-latest', 'macos-latest']
                 php-versions: ['7.4', '8.0', '8.1']
 
         name: ${{ matrix.operating-system }} (PHP ${{ matrix.php-versions }})
 
         steps:
-            - name: Checkout code
+            - name: Checkout
               uses: actions/checkout@v3
-              
+
             - name: PHP
               uses: shivammathur/setup-php@v2
               with:
-                php-version: '${{ matrix.php-versions }}'
-                extensions: gd, zip
-                tools: composer, phpunit
-              
+                  php-version: '${{ matrix.php-versions }}'
+                  extensions: gd, zip
+                  tools: composer, phpunit
+
             - name: Composer
               run: composer install --no-interaction
 
