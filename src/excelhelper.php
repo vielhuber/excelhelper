@@ -102,225 +102,249 @@ class excelhelper
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
-            foreach ($args['data'] as $data__key => $data__value) {
-                $row = $data__key + 1;
-                foreach ($data__value as $data__value__key => $data__value__value) {
-                    $col = self::int2char($data__value__key + 1);
-                    if (!is_array($data__value__value)) {
-                        /* big numbers */
-                        if (is_numeric($data__value__value) && strlen($data__value__value) > 10) {
-                            $data__value__value = '\'' . $data__value__value;
-                        }
-                        $sheet->setCellValue($col . $row, $data__value__value);
-                        $sheet
-                            ->getStyle($col . $row)
-                            ->getAlignment()
-                            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+            if (self::isMultiSheet($args['data'])) {
+                $sheets = $args['data'];
+                $is_multi = true;
+            } else {
+                $sheets = [$args['data']];
+                $is_multi = false;
+            }
+
+            $sheet_index = 0;
+            foreach ($sheets as $sheets__key => $sheets__value) {
+                if ($is_multi === true) {
+                    if ($sheet_index === 0) {
+                        $sheet->setTitle($sheets__key);
                     } else {
-                        if (array_key_exists('value', $data__value__value)) {
+                        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, $sheets__key);
+                        $spreadsheet->addSheet($sheet);
+                    }
+                }
+                $sheet_index++;
+
+                foreach ($sheets__value as $data__key => $data__value) {
+                    $row = $data__key + 1;
+                    foreach ($data__value as $data__value__key => $data__value__value) {
+                        $col = self::int2char($data__value__key + 1);
+                        if (!is_array($data__value__value)) {
                             /* big numbers */
-                            if (is_numeric($data__value__value['value']) && strlen($data__value__value['value']) > 10) {
-                                $data__value__value['value'] = '\'' . $data__value__value['value'];
+                            if (is_numeric($data__value__value) && strlen($data__value__value) > 10) {
+                                $data__value__value = '\'' . $data__value__value;
                             }
-                            $sheet->setCellValue($col . $row, $data__value__value['value']);
-                        }
-                        if (array_key_exists('background-color', $data__value__value)) {
-                            $sheet
-                                ->getStyle($col . $row)
-                                ->getFill()
-                                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
-                            $sheet
-                                ->getStyle($col . $row)
-                                ->getFill()
-                                ->getStartColor()
-                                ->setARGB('00' . str_replace('#', '', $data__value__value['background-color']));
-                        }
-                        if (array_key_exists('color', $data__value__value)) {
-                            $sheet
-                                ->getStyle($col . $row)
-                                ->getFont()
-                                ->getColor()
-                                ->setARGB('00' . str_replace('#', '', $data__value__value['color']));
-                        }
-                        if (
-                            array_key_exists('font-weight', $data__value__value) &&
-                            $data__value__value['font-weight'] === 'bold'
-                        ) {
-                            $sheet
-                                ->getStyle($col . $row)
-                                ->getFont()
-                                ->setBold(true);
-                        }
-                        if (
-                            array_key_exists('text-align', $data__value__value) &&
-                            $data__value__value['text-align'] === 'center'
-                        ) {
+                            $sheet->setCellValue($col . $row, $data__value__value);
                             $sheet
                                 ->getStyle($col . $row)
                                 ->getAlignment()
-                                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+                                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+                        } else {
+                            if (array_key_exists('value', $data__value__value)) {
+                                /* big numbers */
+                                if (
+                                    is_numeric($data__value__value['value']) &&
+                                    strlen($data__value__value['value']) > 10
+                                ) {
+                                    $data__value__value['value'] = '\'' . $data__value__value['value'];
+                                }
+                                $sheet->setCellValue($col . $row, $data__value__value['value']);
+                            }
+                            if (array_key_exists('background-color', $data__value__value)) {
+                                $sheet
+                                    ->getStyle($col . $row)
+                                    ->getFill()
+                                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+                                $sheet
+                                    ->getStyle($col . $row)
+                                    ->getFill()
+                                    ->getStartColor()
+                                    ->setARGB('00' . str_replace('#', '', $data__value__value['background-color']));
+                            }
+                            if (array_key_exists('color', $data__value__value)) {
+                                $sheet
+                                    ->getStyle($col . $row)
+                                    ->getFont()
+                                    ->getColor()
+                                    ->setARGB('00' . str_replace('#', '', $data__value__value['color']));
+                            }
+                            if (
+                                array_key_exists('font-weight', $data__value__value) &&
+                                $data__value__value['font-weight'] === 'bold'
+                            ) {
+                                $sheet
+                                    ->getStyle($col . $row)
+                                    ->getFont()
+                                    ->setBold(true);
+                            }
+                            if (
+                                array_key_exists('text-align', $data__value__value) &&
+                                $data__value__value['text-align'] === 'center'
+                            ) {
+                                $sheet
+                                    ->getStyle($col . $row)
+                                    ->getAlignment()
+                                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+                            }
+                            if (
+                                array_key_exists('text-align', $data__value__value) &&
+                                $data__value__value['text-align'] === 'right'
+                            ) {
+                                $sheet
+                                    ->getStyle($col . $row)
+                                    ->getAlignment()
+                                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                            }
+                            if (
+                                !array_key_exists('text-align', $data__value__value) ||
+                                $data__value__value['text-align'] === 'left'
+                            ) {
+                                $sheet
+                                    ->getStyle($col . $row)
+                                    ->getAlignment()
+                                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+                            }
+                            if (array_key_exists('border', $data__value__value)) {
+                                $sheet
+                                    ->getStyle($col . $row)
+                                    ->getBorders()
+                                    ->getTop()
+                                    ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                                $sheet
+                                    ->getStyle($col . $row)
+                                    ->getBorders()
+                                    ->getLeft()
+                                    ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                                $sheet
+                                    ->getStyle($col . $row)
+                                    ->getBorders()
+                                    ->getBottom()
+                                    ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                                $sheet
+                                    ->getStyle($col . $row)
+                                    ->getBorders()
+                                    ->getRight()
+                                    ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                            }
                         }
-                        if (
-                            array_key_exists('text-align', $data__value__value) &&
-                            $data__value__value['text-align'] === 'right'
-                        ) {
+                    }
+                }
+
+                if ($args['style_header'] === true) {
+                    $sheet
+                        ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
+                        ->getFont()
+                        ->setBold(true);
+                    $sheet
+                        ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
+                        ->getAlignment()
+                        ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+                    $sheet
+                        ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
+                        ->getAlignment()
+                        ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+                    $sheet
+                        ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
+                        ->getAlignment()
+                        ->setWrapText(true);
+                    $sheet->getRowDimension('1')->setRowHeight(60);
+                }
+
+                if ($args['autosize_columns'] === true) {
+                    // first set columns to auto size
+                    $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
+                    $toCol++;
+                    for ($i = 'A'; $i !== $toCol; $i++) {
+                        $sheet->getColumnDimension($i)->setAutoSize(true);
+                    }
+                    $sheet->calculateColumnWidths();
+                    // increase columns by little padding
+                    $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
+                    $toCol++;
+                    for ($i = 'A'; $i !== $toCol; $i++) {
+                        $calculatedWidth = $sheet->getColumnDimension($i)->getWidth();
+                        $sheet
+                            ->getColumnDimension($i)
+                            ->setWidth((int) $calculatedWidth * 1.1)
+                            ->setAutoSize(false);
+                    }
+                    $sheet->calculateColumnWidths();
+                }
+                if ($args['autosize_columns'] === false) {
+                    $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
+                    $toCol++;
+                    for ($i = 'A'; $i !== $toCol; $i++) {
+                        $calculatedWidth = $sheet->getColumnDimension($i)->getWidth();
+                        $sheet
+                            ->getColumnDimension($i)
+                            ->setWidth(30)
+                            ->setAutoSize(false);
+                    }
+                    $sheet->calculateColumnWidths();
+                }
+
+                if ($args['auto_borders'] === true) {
+                    $sheet->getStyle('A1:' . ($sheet->getHighestColumn() . $sheet->getHighestRow()))->applyFromArray([
+                        'borders' => [
+                            'allBorders' => [
+                                'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                                'color' => ['rgb' => '000000']
+                            ]
+                        ]
+                    ]);
+                }
+
+                // format some data as text (long numbers)
+                for ($row = 1; $row <= $sheet->getHighestRow(); $row++) {
+                    $toCol = $sheet->getHighestColumn();
+                    $toCol++;
+                    for ($col = 'A'; $col != $toCol; $col++) {
+                        $val = $sheet->getCell($col . $row)->getValue();
+                        if (strpos($val, '\'') === 0 && is_numeric(str_replace('\'', '', $val)) && strlen($val) > 10) {
+                            $sheet
+                                ->getCell($col . $row)
+                                ->setValueExplicit(
+                                    str_replace('\'', '', $val),
+                                    \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
+                                );
                             $sheet
                                 ->getStyle($col . $row)
-                                ->getAlignment()
-                                ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                                ->getNumberFormat()
+                                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
                         }
-                        if (
-                            !array_key_exists('text-align', $data__value__value) ||
-                            $data__value__value['text-align'] === 'left'
-                        ) {
+                    }
+                }
+
+                // format some data as currency
+                for ($row = 1; $row <= $sheet->getHighestRow(); $row++) {
+                    $toCol = $sheet->getHighestColumn();
+                    $toCol++;
+                    for ($col = 'A'; $col != $toCol; $col++) {
+                        if (preg_match('/^(\d|,|\.| )+€$/', $sheet->getCell($col . $row)->getValue())) {
+                            // convert in float
+                            $sheet
+                                ->getCell($col . $row)
+                                ->setValueExplicit(
+                                    floatval(
+                                        str_replace(
+                                            '€',
+                                            '',
+                                            str_replace(
+                                                ',',
+                                                '.',
+                                                str_replace(' ', '', $sheet->getCell($col . $row)->getValue())
+                                            )
+                                        )
+                                    ),
+                                    \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC
+                                );
+                            // format as euro
+                            $sheet
+                                ->getStyle($col . $row)
+                                ->getNumberFormat()
+                                ->setFormatCode('#,##0.00€');
                             $sheet
                                 ->getStyle($col . $row)
                                 ->getAlignment()
                                 ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
                         }
-                        if (array_key_exists('border', $data__value__value)) {
-                            $sheet
-                                ->getStyle($col . $row)
-                                ->getBorders()
-                                ->getTop()
-                                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                            $sheet
-                                ->getStyle($col . $row)
-                                ->getBorders()
-                                ->getLeft()
-                                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                            $sheet
-                                ->getStyle($col . $row)
-                                ->getBorders()
-                                ->getBottom()
-                                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                            $sheet
-                                ->getStyle($col . $row)
-                                ->getBorders()
-                                ->getRight()
-                                ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                        }
-                    }
-                }
-            }
-
-            if ($args['style_header'] === true) {
-                $sheet
-                    ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
-                    ->getFont()
-                    ->setBold(true);
-                $sheet
-                    ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
-                    ->getAlignment()
-                    ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-                $sheet
-                    ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
-                    ->getAlignment()
-                    ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-                $sheet
-                    ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
-                    ->getAlignment()
-                    ->setWrapText(true);
-                $sheet->getRowDimension('1')->setRowHeight(60);
-            }
-
-            if ($args['autosize_columns'] === true) {
-                // first set columns to auto size
-                $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
-                $toCol++;
-                for ($i = 'A'; $i !== $toCol; $i++) {
-                    $sheet->getColumnDimension($i)->setAutoSize(true);
-                }
-                $sheet->calculateColumnWidths();
-                // increase columns by little padding
-                $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
-                $toCol++;
-                for ($i = 'A'; $i !== $toCol; $i++) {
-                    $calculatedWidth = $sheet->getColumnDimension($i)->getWidth();
-                    $sheet
-                        ->getColumnDimension($i)
-                        ->setWidth((int) $calculatedWidth * 1.1)
-                        ->setAutoSize(false);
-                }
-                $sheet->calculateColumnWidths();
-            }
-            if ($args['autosize_columns'] === false) {
-                $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
-                $toCol++;
-                for ($i = 'A'; $i !== $toCol; $i++) {
-                    $calculatedWidth = $sheet->getColumnDimension($i)->getWidth();
-                    $sheet
-                        ->getColumnDimension($i)
-                        ->setWidth(30)
-                        ->setAutoSize(false);
-                }
-                $sheet->calculateColumnWidths();
-            }
-
-            if ($args['auto_borders'] === true) {
-                $sheet->getStyle('A1:' . ($sheet->getHighestColumn() . $sheet->getHighestRow()))->applyFromArray([
-                    'borders' => [
-                        'allBorders' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                            'color' => ['rgb' => '000000']
-                        ]
-                    ]
-                ]);
-            }
-
-            // format some data as text (long numbers)
-            for ($row = 1; $row <= $sheet->getHighestRow(); $row++) {
-                $toCol = $sheet->getHighestColumn();
-                $toCol++;
-                for ($col = 'A'; $col != $toCol; $col++) {
-                    $val = $sheet->getCell($col . $row)->getValue();
-                    if (strpos($val, '\'') === 0 && is_numeric(str_replace('\'', '', $val)) && strlen($val) > 10) {
-                        $sheet
-                            ->getCell($col . $row)
-                            ->setValueExplicit(
-                                str_replace('\'', '', $val),
-                                \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
-                            );
-                        $sheet
-                            ->getStyle($col . $row)
-                            ->getNumberFormat()
-                            ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
-                    }
-                }
-            }
-
-            // format some data as currency
-            for ($row = 1; $row <= $sheet->getHighestRow(); $row++) {
-                $toCol = $sheet->getHighestColumn();
-                $toCol++;
-                for ($col = 'A'; $col != $toCol; $col++) {
-                    if (preg_match('/^(\d|,|\.| )+€$/', $sheet->getCell($col . $row)->getValue())) {
-                        // convert in float
-                        $sheet
-                            ->getCell($col . $row)
-                            ->setValueExplicit(
-                                floatval(
-                                    str_replace(
-                                        '€',
-                                        '',
-                                        str_replace(
-                                            ',',
-                                            '.',
-                                            str_replace(' ', '', $sheet->getCell($col . $row)->getValue())
-                                        )
-                                    )
-                                ),
-                                \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC
-                            );
-                        // format as euro
-                        $sheet
-                            ->getStyle($col . $row)
-                            ->getNumberFormat()
-                            ->setFormatCode('#,##0.00€');
-                        $sheet
-                            ->getStyle($col . $row)
-                            ->getAlignment()
-                            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
                     }
                 }
             }
@@ -383,34 +407,52 @@ class excelhelper
         if (!in_array($args['output'], ['save', 'download'])) {
             throw new \Exception('unknown output');
         }
+
         // normalize data
-        $args['data'] = array_values($args['data']);
-        foreach ($args['data'] as $data__key => $data__value) {
-            $args['data'][$data__key] = array_values($data__value);
+        $is_multi = self::isMultiSheet($args['data']);
+        if ($is_multi) {
+            $data_normalized = $args['data'];
+        } else {
+            $data_normalized = [$args['data']];
         }
-        if ($args['remove_empty_cols'] === true) {
-            $empty_rows = [];
-            foreach ($args['data'] as $data__value) {
-                foreach ($data__value as $data__value__key => $data__value__value) {
-                    if ($data__value__value === null || $data__value__value === '') {
-                        if (!array_key_exists($data__value__key, $empty_rows)) {
-                            $empty_rows[$data__value__key] = 0;
+        foreach ($data_normalized as $data_normalized__key => $data_normalized__value) {
+            $data_normalized__value = array_values($data_normalized__value);
+            foreach ($data_normalized__value as $data__key => $data__value) {
+                $data_normalized__value[$data__key] = array_values($data__value);
+            }
+
+            if ($args['remove_empty_cols'] === true) {
+                $empty_rows = [];
+                foreach ($data_normalized__value as $data__value) {
+                    foreach ($data__value as $data__value__key => $data__value__value) {
+                        if ($data__value__value === null || $data__value__value === '') {
+                            if (!array_key_exists($data__value__key, $empty_rows)) {
+                                $empty_rows[$data__value__key] = 0;
+                            }
+                            $empty_rows[$data__value__key]++;
                         }
-                        $empty_rows[$data__value__key]++;
                     }
                 }
-            }
-            foreach ($empty_rows as $empty_rows__key => $empty_rows__value) {
-                if ($empty_rows__value >= count($args['data']) - 1) {
-                    foreach ($args['data'] as $data__key => $data__value) {
-                        unset($args['data'][$data__key][$empty_rows__key]);
+                foreach ($empty_rows as $empty_rows__key => $empty_rows__value) {
+                    if ($empty_rows__value >= count($data_normalized__value) - 1) {
+                        foreach ($data_normalized__value as $data__key => $data__value) {
+                            unset($data_normalized__value[$data__key][$empty_rows__key]);
+                        }
                     }
                 }
+                foreach ($data_normalized__value as $data__key => $data__value) {
+                    $data_normalized__value[$data__key] = array_values($data__value);
+                }
             }
-            foreach ($args['data'] as $data__key => $data__value) {
-                $args['data'][$data__key] = array_values($data__value);
-            }
+
+            $data_normalized[$data_normalized__key] = $data_normalized__value;
         }
+        if ($is_multi) {
+            $args['data'] = $data_normalized;
+        } else {
+            $args['data'] = $data_normalized[0];
+        }
+
         return $args;
     }
 
@@ -420,6 +462,11 @@ class excelhelper
             return 'xlsx';
         }
         return null;
+    }
+
+    private static function isMultiSheet($data)
+    {
+        return !empty($data) && array_keys($data)[0] !== 0 && is_string(array_keys($data)[0]);
     }
 
     private static function char2int($letters)

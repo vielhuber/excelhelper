@@ -48,13 +48,47 @@ excelhelper::write([
     'auto_borders' => true, // true|false
     'remove_empty_cols' => false, // true|false
     'data' => [
-        ['a1','b1','c1'],
-        ['a2','b2','c2'],
+        ['a1', 'b1', 'c1'],
+        ['a2', 'b2', 'c2'],
         [
-          ['value' => 'a3', 'background-color' => '#ff0000', 'color' => '#ffffff', 'font-weight' => 'bold', 'border' => '1px solid #000', 'text-align' => 'center'],
-          ['value' => 'b3', 'background-color' => '#ff0000', 'color' => '#ffffff', 'font-weight' => 'bold', 'border' => '1px solid #000', 'text-align' => 'left'],
-          ['value' => 'c3', 'background-color' => '#ff0000', 'color' => '#ffffff', 'font-weight' => 'bold', 'border' => '1px solid #000', 'text-align' => 'right'],
+            [
+                'value' => 'a3',
+                'background-color' => '#ff0000',
+                'color' => '#ffffff',
+                'font-weight' => 'bold',
+                'border' => '1px solid #000',
+                'text-align' => 'center'
+            ],
+            [
+                'value' => 'b3',
+                'background-color' => '#ff0000',
+                'color' => '#ffffff',
+                'font-weight' => 'bold',
+                'border' => '1px solid #000',
+                'text-align' => 'left'
+            ],
+            [
+                'value' => 'c3',
+                'background-color' => '#ff0000',
+                'color' => '#ffffff',
+                'font-weight' => 'bold',
+                'border' => '1px solid #000',
+                'text-align' => 'right'
+            ]
         ]
+    ]
+]);
+```
+
+```php
+excelhelper::write([
+    'file' => 'file.xlsx',
+    'engine' => 'phpspreadsheet',
+    'output' => 'save',
+    'data' => [
+        'Sheet 1' => [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']],
+        'Sheet 2' => [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']]
+        'Sheet 3' => [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']]
     ]
 ]);
 ```

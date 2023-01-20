@@ -3,7 +3,7 @@ use vielhuber\excelhelper\excelhelper;
 
 class Test extends \PHPUnit\Framework\TestCase
 {
-    function test__excelhelper()
+    function test__basic()
     {
         $data = [
             ['a1', 'b1', 'c1'],
@@ -91,7 +91,10 @@ class Test extends \PHPUnit\Framework\TestCase
             1 => ['A' => 'foo', 'B' => 'bar', 'C' => '...'],
             2 => ['A' => 'bar', 'B' => 4, 'C' => '...']
         ]);
+    }
 
+    function test__multi()
+    {
         $array = excelhelper::read([
             'file' => 'tests/multi.xlsx',
             'first_line' => true,
@@ -111,6 +114,51 @@ class Test extends \PHPUnit\Framework\TestCase
             'foo' => [['a', 'b', 'c']],
             'bar' => [['d', 'e', 'f']],
             'baz' => [['g', 'h', 'i']]
+        ]);
+
+        excelhelper::write([
+            'file' => 'tests/test.xlsx',
+            'engine' => 'phpspreadsheet',
+            'output' => 'save',
+            'data' => [
+                'Sheet #1' => [['a', 'b', 'c']],
+                'Sheet #2' => [['d', 'e', 'f']],
+                'Sheet #3' => [['g', 'h', 'i']]
+            ]
+        ]);
+        $array = excelhelper::read([
+            'file' => 'tests/test.xlsx',
+            'first_line' => true,
+            'format_cells' => false,
+            'all_sheets' => true,
+            'friendly_keys' => false
+        ]);
+        $this->assertEquals($array, [
+            'Sheet #1' => [['a', 'b', 'c']],
+            'Sheet #2' => [['d', 'e', 'f']],
+            'Sheet #3' => [['g', 'h', 'i']]
+        ]);
+
+        excelhelper::write([
+            'file' => 'tests/test.xlsx',
+            'engine' => 'phpspreadsheet',
+            'output' => 'save',
+            'remove_empty_cols' => true,
+            'data' => [
+                'foo' => [[3 => 'foo', 12 => ''], [4 => 'bar', 11 => '']],
+                'bar' => [[3 => 'foo', 12 => ''], [4 => 'bar', 11 => '']]
+            ]
+        ]);
+        $array = excelhelper::read([
+            'file' => 'tests/test.xlsx',
+            'first_line' => true,
+            'format_cells' => false,
+            'all_sheets' => true,
+            'friendly_keys' => false
+        ]);
+        $this->assertEquals($array, [
+            'foo' => [['foo'], ['bar']],
+            'bar' => [['foo'], ['bar']]
         ]);
     }
 }
