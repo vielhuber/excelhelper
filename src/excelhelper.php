@@ -366,8 +366,6 @@ class excelhelper
                 die();
             }
         }
-        if ($args['engine'] === 'spout') {
-        }
     }
 
     private static function prepareWriteArgs($args)
@@ -401,7 +399,7 @@ class excelhelper
         if (self::getType($args['file']) === null) {
             throw new \Exception('unknown file extension');
         }
-        if (!in_array($args['engine'], ['phpspreadsheet', 'spout'])) {
+        if (!in_array($args['engine'], ['phpspreadsheet'])) {
             throw new \Exception('unknown engine');
         }
         if (!in_array($args['output'], ['save', 'download'])) {

@@ -41,7 +41,7 @@ $array = excelhelper::read([
 ```php
 excelhelper::write([
     'file' => 'file.xlsx', // can write xlsx, xls and csv; if null, a filename is suggested
-    'engine' => 'phpspreadsheet', // phpspreadsheet|spout
+    'engine' => 'phpspreadsheet',
     'output' => 'save', // save|download
     'style_header' => true, // true|false
     'autosize_columns' => true, // true|false
@@ -87,7 +87,7 @@ excelhelper::write([
     'output' => 'save',
     'data' => [
         'Sheet 1' => [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']],
-        'Sheet 2' => [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']]
+        'Sheet 2' => [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']],
         'Sheet 3' => [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']]
     ]
 ]);
