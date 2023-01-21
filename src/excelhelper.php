@@ -114,9 +114,9 @@ class excelhelper
             foreach ($sheets as $sheets__key => $sheets__value) {
                 if ($is_multi === true) {
                     if ($sheet_index === 0) {
-                        $sheet->setTitle($sheets__key);
+                        $sheet->setTitle((string) $sheets__key);
                     } else {
-                        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, $sheets__key);
+                        $sheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, (string) $sheets__key);
                         $spreadsheet->addSheet($sheet);
                     }
                 }
@@ -464,7 +464,10 @@ class excelhelper
 
     private static function isMultiSheet($data)
     {
-        return !empty($data) && array_keys($data)[0] !== 0 && is_string(array_keys($data)[0]);
+        // detection is tricky, because we also want to allow key names like "2022" (but want to normalize other ints)
+        return !empty($data) &&
+            array_keys($data)[0] !== 0 &&
+            ((is_integer(array_keys($data)[0]) && array_keys($data)[0] > 20) || is_string(array_keys($data)[0]));
     }
 
     private static function char2int($letters)

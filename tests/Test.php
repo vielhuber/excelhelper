@@ -116,28 +116,36 @@ class Test extends \PHPUnit\Framework\TestCase
             'baz' => [['g', 'h', 'i']]
         ]);
 
-        excelhelper::write([
-            'file' => 'tests/test.xlsx',
-            'engine' => 'phpspreadsheet',
-            'output' => 'save',
-            'data' => [
-                'Sheet #1' => [['a', 'b', 'c']],
-                'Sheet #2' => [['d', 'e', 'f']],
-                'Sheet #3' => [['g', 'h', 'i']]
+        foreach (
+            [
+                [
+                    'Sheet #1' => [['a', 'b', 'c']],
+                    'Sheet #2' => [['d', 'e', 'f']],
+                    'Sheet #3' => [['g', 'h', 'i']]
+                ],
+                [
+                    '2022' => [['a', 'b', 'c']],
+                    '2023' => [['d', 'e', 'f']],
+                    '2024' => [['g', 'h', 'i']]
+                ]
             ]
-        ]);
-        $array = excelhelper::read([
-            'file' => 'tests/test.xlsx',
-            'first_line' => true,
-            'format_cells' => false,
-            'all_sheets' => true,
-            'friendly_keys' => false
-        ]);
-        $this->assertEquals($array, [
-            'Sheet #1' => [['a', 'b', 'c']],
-            'Sheet #2' => [['d', 'e', 'f']],
-            'Sheet #3' => [['g', 'h', 'i']]
-        ]);
+            as $tests__value
+        ) {
+            excelhelper::write([
+                'file' => 'tests/test.xlsx',
+                'engine' => 'phpspreadsheet',
+                'output' => 'save',
+                'data' => $tests__value
+            ]);
+            $array = excelhelper::read([
+                'file' => 'tests/test.xlsx',
+                'first_line' => true,
+                'format_cells' => false,
+                'all_sheets' => true,
+                'friendly_keys' => false
+            ]);
+            $this->assertEquals($array, $tests__value);
+        }
 
         excelhelper::write([
             'file' => 'tests/test.xlsx',
