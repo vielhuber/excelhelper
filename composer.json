@@ -3,7 +3,7 @@
     "description": "A super simple excel wrapper in php.",
     "require": {
         "php": ">=7.4",
-        "phpoffice/phpspreadsheet": "^1.5"
+        "phpoffice/phpspreadsheet": ">=1.5"
     },
     "license": "MIT",
     "autoload": {
