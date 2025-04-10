@@ -297,7 +297,7 @@ class excelhelper
                     $toCol++;
                     for ($col = 'A'; $col != $toCol; $col++) {
                         $val = $sheet->getCell($col . $row)->getValue();
-                        if (strpos($val, '\'') === 0 && is_numeric(str_replace('\'', '', $val)) && strlen($val) > 10) {
+                        if ($val !== null && strpos($val, '\'') === 0 && is_numeric(str_replace('\'', '', $val)) && strlen($val) > 10) {
                             $sheet
                                 ->getCell($col . $row)
                                 ->setValueExplicit(
@@ -317,7 +317,7 @@ class excelhelper
                     $toCol = $sheet->getHighestColumn();
                     $toCol++;
                     for ($col = 'A'; $col != $toCol; $col++) {
-                        if (preg_match('/^(\d|,|\.| )+€$/', $sheet->getCell($col . $row)->getValue())) {
+                        if ($sheet->getCell($col . $row)->getValue() !== null && preg_match('/^(\d|,|\.| )+€$/', $sheet->getCell($col . $row)->getValue())) {
                             // convert in float
                             $sheet
                                 ->getCell($col . $row)
