@@ -48,7 +48,8 @@ class Test extends \PHPUnit\Framework\TestCase
             'first_line' => true,
             'format_cells' => false,
             'all_sheets' => false,
-            'friendly_keys' => false
+            'friendly_keys' => false,
+            'titles_as_keys' => false
         ]);
         $this->assertEquals($array, [
             ['a1', 'b1', 'c1'],
@@ -60,12 +61,25 @@ class Test extends \PHPUnit\Framework\TestCase
             'first_line' => true,
             'format_cells' => false,
             'all_sheets' => false,
-            'friendly_keys' => true
+            'friendly_keys' => true,
+            'titles_as_keys' => false
         ]);
         $this->assertEquals($array, [
             1 => ['A' => 'a1', 'B' => 'b1', 'C' => 'c1'],
             2 => ['A' => 'a2', 'B' => '200', 'C' => '1049090014867191'],
             3 => ['A' => 'ca. 200,00 €', 'B' => '200.50', 'C' => '200.50']
+        ]);
+        $array = excelhelper::read([
+            'file' => 'tests/test.xlsx',
+            'first_line' => false,
+            'format_cells' => false,
+            'all_sheets' => false,
+            'friendly_keys' => false,
+            'titles_as_keys' => true
+        ]);
+        $this->assertEquals($array, [
+            0 => ['a1' => 'a2', 'b1' => '200', 'c1' => '1049090014867191'],
+            1 => ['a1' => 'ca. 200,00 €', 'b1' => '200.50', 'c1' => '200.50']
         ]);
 
         excelhelper::write([
@@ -85,7 +99,8 @@ class Test extends \PHPUnit\Framework\TestCase
             'first_line' => true,
             'format_cells' => false,
             'all_sheets' => false,
-            'friendly_keys' => true
+            'friendly_keys' => true,
+            'titles_as_keys' => false
         ]);
         $this->assertEquals($array, [
             1 => ['A' => 'foo', 'B' => 'bar', 'C' => '...'],
@@ -100,7 +115,8 @@ class Test extends \PHPUnit\Framework\TestCase
             'first_line' => true,
             'format_cells' => false,
             'all_sheets' => false,
-            'friendly_keys' => false
+            'friendly_keys' => false,
+            'titles_as_keys' => false
         ]);
         $this->assertEquals($array, [['a', 'b', 'c']]);
         $array = excelhelper::read([
@@ -108,7 +124,8 @@ class Test extends \PHPUnit\Framework\TestCase
             'first_line' => true,
             'format_cells' => false,
             'all_sheets' => true,
-            'friendly_keys' => false
+            'friendly_keys' => false,
+            'titles_as_keys' => false
         ]);
         $this->assertEquals($array, [
             'foo' => [['a', 'b', 'c']],
@@ -142,7 +159,8 @@ class Test extends \PHPUnit\Framework\TestCase
                 'first_line' => true,
                 'format_cells' => false,
                 'all_sheets' => true,
-                'friendly_keys' => false
+                'friendly_keys' => false,
+                'titles_as_keys' => false
             ]);
             $this->assertEquals($array, $tests__value);
         }
@@ -162,7 +180,8 @@ class Test extends \PHPUnit\Framework\TestCase
             'first_line' => true,
             'format_cells' => false,
             'all_sheets' => true,
-            'friendly_keys' => false
+            'friendly_keys' => false,
+            'titles_as_keys' => false
         ]);
         $this->assertEquals($array, [
             'foo' => [['foo'], ['bar']],

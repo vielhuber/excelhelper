@@ -15,10 +15,14 @@ class excelhelper
         $filetype = IOFactory::identify($args['file']);
         $reader = IOFactory::createReader($filetype);
         $spreadsheet = $reader->load($args['file']);
+        $titles = [];
 
         if ($args['all_sheets'] === false) {
             $sheet = $spreadsheet->getSheet(0);
             $array = $sheet->toArray(null, true, $args['format_cells']);
+            if ($args['titles_as_keys'] === true) {
+                $titles[$sheet->getTitle()] = array_values($array[0]);
+            }
             if ($args['first_line'] === false) {
                 unset($array[0]);
                 $array = array_values($array);
@@ -27,6 +31,9 @@ class excelhelper
         } else {
             foreach ($spreadsheet->getWorksheetIterator() as $sheet_nr => $sheet) {
                 $array = $sheet->toArray(null, true, $args['format_cells']);
+                if ($args['titles_as_keys'] === true) {
+                    $titles[$sheet->getTitle()] = array_values($array[0]);
+                }
                 if ($args['first_line'] === false) {
                     unset($array[0]);
                     $array = array_values($array);
@@ -35,7 +42,18 @@ class excelhelper
             }
         }
 
-        if ($args['friendly_keys'] === true) {
+        if ($args['titles_as_keys'] === true) {
+            foreach ($sheets as $sheets__key => $array) {
+                $array_friendly = [];
+                foreach ($array as $array__key => $array__value) {
+                    $array_friendly[$array__key] = [];
+                    foreach ($array__value as $array__value__key => $array__value__value) {
+                        $array_friendly[$array__key][$titles[$sheets__key][$array__value__key]] = $array__value__value;
+                    }
+                }
+                $sheets[$sheets__key] = $array_friendly;
+            }
+        } elseif ($args['friendly_keys'] === true) {
             foreach ($sheets as $sheets__key => $array) {
                 $array_friendly = [];
                 foreach ($array as $array__key => $array__value) {
@@ -73,6 +91,9 @@ class excelhelper
         if (!array_key_exists('friendly_keys', $args)) {
             $args['friendly_keys'] = true;
         }
+        if (!array_key_exists('titles_as_keys', $args)) {
+            $args['titles_as_keys'] = false;
+        }
         // checks
         if (!isset($args['file']) && !file_exists($args['file'])) {
             throw new \Exception('file missing');
@@ -91,6 +112,9 @@ class excelhelper
         }
         if (!in_array($args['friendly_keys'], [true, false])) {
             throw new \Exception('unknown friendly_keys');
+        }
+        if (!in_array($args['titles_as_keys'], [true, false])) {
+            throw new \Exception('unknown titles_as_keys');
         }
         return $args;
     }
@@ -272,10 +296,7 @@ class excelhelper
                     $toCol++;
                     for ($i = 'A'; $i !== $toCol; $i++) {
                         $calculatedWidth = $sheet->getColumnDimension($i)->getWidth();
-                        $sheet
-                            ->getColumnDimension($i)
-                            ->setWidth(30)
-                            ->setAutoSize(false);
+                        $sheet->getColumnDimension($i)->setWidth(30)->setAutoSize(false);
                     }
                     $sheet->calculateColumnWidths();
                 }
@@ -297,7 +318,12 @@ class excelhelper
                     $toCol++;
                     for ($col = 'A'; $col != $toCol; $col++) {
                         $val = $sheet->getCell($col . $row)->getValue();
-                        if ($val !== null && strpos($val, '\'') === 0 && is_numeric(str_replace('\'', '', $val)) && strlen($val) > 10) {
+                        if (
+                            $val !== null &&
+                            strpos($val, '\'') === 0 &&
+                            is_numeric(str_replace('\'', '', $val)) &&
+                            strlen($val) > 10
+                        ) {
                             $sheet
                                 ->getCell($col . $row)
                                 ->setValueExplicit(
@@ -317,7 +343,10 @@ class excelhelper
                     $toCol = $sheet->getHighestColumn();
                     $toCol++;
                     for ($col = 'A'; $col != $toCol; $col++) {
-                        if ($sheet->getCell($col . $row)->getValue() !== null && preg_match('/^(\d|,|\.| )+€$/', $sheet->getCell($col . $row)->getValue())) {
+                        if (
+                            $sheet->getCell($col . $row)->getValue() !== null &&
+                            preg_match('/^(\d|,|\.| )+€$/', $sheet->getCell($col . $row)->getValue())
+                        ) {
                             // convert in float
                             $sheet
                                 ->getCell($col . $row)
