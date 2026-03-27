@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
 namespace vielhuber\excelhelper;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class excelhelper
@@ -95,7 +97,7 @@ class excelhelper
             $args['titles_as_keys'] = false;
         }
         // checks
-        if (!isset($args['file']) && !file_exists($args['file'])) {
+        if (!isset($args['file']) || !file_exists($args['file'])) {
             throw new \Exception('file missing');
         }
         if (!in_array($args['first_line'], [true, false])) {
@@ -268,35 +270,34 @@ class excelhelper
                         ->getStyle('A1:' . $sheet->getHighestColumn() . '1')
                         ->getAlignment()
                         ->setWrapText(true);
-                    $sheet->getRowDimension('1')->setRowHeight(60);
+                    $sheet->getRowDimension(1)->setRowHeight(60);
                 }
 
                 if ($args['autosize_columns'] === true) {
                     // first set columns to auto size
-                    $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
-                    $toCol++;
-                    for ($i = 'A'; $i !== $toCol; $i++) {
-                        $sheet->getColumnDimension($i)->setAutoSize(true);
+                    $toColIndex = Coordinate::columnIndexFromString($sheet->getHighestColumn());
+                    for ($colIndex = 1; $colIndex <= $toColIndex; $colIndex++) {
+                        $col = Coordinate::stringFromColumnIndex($colIndex);
+                        $sheet->getColumnDimension($col)->setAutoSize(true);
                     }
                     $sheet->calculateColumnWidths();
                     // increase columns by little padding
-                    $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
-                    $toCol++;
-                    for ($i = 'A'; $i !== $toCol; $i++) {
-                        $calculatedWidth = $sheet->getColumnDimension($i)->getWidth();
+                    $toColIndex = Coordinate::columnIndexFromString($sheet->getHighestColumn());
+                    for ($colIndex = 1; $colIndex <= $toColIndex; $colIndex++) {
+                        $col = Coordinate::stringFromColumnIndex($colIndex);
+                        $calculatedWidth = $sheet->getColumnDimension($col)->getWidth();
                         $sheet
-                            ->getColumnDimension($i)
+                            ->getColumnDimension($col)
                             ->setWidth((int) $calculatedWidth * 1.1)
                             ->setAutoSize(false);
                     }
                     $sheet->calculateColumnWidths();
                 }
                 if ($args['autosize_columns'] === false) {
-                    $toCol = $sheet->getColumnDimension($sheet->getHighestColumn())->getColumnIndex();
-                    $toCol++;
-                    for ($i = 'A'; $i !== $toCol; $i++) {
-                        $calculatedWidth = $sheet->getColumnDimension($i)->getWidth();
-                        $sheet->getColumnDimension($i)->setWidth(30)->setAutoSize(false);
+                    $toColIndex = Coordinate::columnIndexFromString($sheet->getHighestColumn());
+                    for ($colIndex = 1; $colIndex <= $toColIndex; $colIndex++) {
+                        $col = Coordinate::stringFromColumnIndex($colIndex);
+                        $sheet->getColumnDimension($col)->setWidth(30)->setAutoSize(false);
                     }
                     $sheet->calculateColumnWidths();
                 }
@@ -314,9 +315,9 @@ class excelhelper
 
                 // format some data as text (long numbers)
                 for ($row = 1; $row <= $sheet->getHighestRow(); $row++) {
-                    $toCol = $sheet->getHighestColumn();
-                    $toCol++;
-                    for ($col = 'A'; $col != $toCol; $col++) {
+                    $toColIndex = Coordinate::columnIndexFromString($sheet->getHighestColumn());
+                    for ($colIndex = 1; $colIndex <= $toColIndex; $colIndex++) {
+                        $col = Coordinate::stringFromColumnIndex($colIndex);
                         $val = $sheet->getCell($col . $row)->getValue();
                         if (
                             $val !== null &&
@@ -340,9 +341,9 @@ class excelhelper
 
                 // format some data as currency
                 for ($row = 1; $row <= $sheet->getHighestRow(); $row++) {
-                    $toCol = $sheet->getHighestColumn();
-                    $toCol++;
-                    for ($col = 'A'; $col != $toCol; $col++) {
+                    $toColIndex = Coordinate::columnIndexFromString($sheet->getHighestColumn());
+                    for ($colIndex = 1; $colIndex <= $toColIndex; $colIndex++) {
+                        $col = Coordinate::stringFromColumnIndex($colIndex);
                         if (
                             $sheet->getCell($col . $row)->getValue() !== null &&
                             preg_match('/^(\d|,|\.| )+€$/', $sheet->getCell($col . $row)->getValue())
