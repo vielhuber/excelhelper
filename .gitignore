@@ -6,3 +6,4 @@
 /package-lock.json
 /tests/~$*.xlsx
 /.phpunit.result.cache
+/.phpunit.cache
