@@ -154,7 +154,7 @@ class excelhelper
                         $col = self::int2char($data__value__key + 1);
                         if (!is_array($data__value__value)) {
                             /* big numbers */
-                            if (is_numeric($data__value__value) && strlen($data__value__value) > 10) {
+                            if (is_numeric($data__value__value) && strlen((string) $data__value__value) > 10) {
                                 $data__value__value = '\'' . $data__value__value;
                             }
                             $sheet->setCellValue($col . $row, $data__value__value);
@@ -167,7 +167,7 @@ class excelhelper
                                 /* big numbers */
                                 if (
                                     is_numeric($data__value__value['value']) &&
-                                    strlen($data__value__value['value']) > 10
+                                    strlen((string) $data__value__value['value']) > 10
                                 ) {
                                     $data__value__value['value'] = '\'' . $data__value__value['value'];
                                 }
@@ -321,6 +321,7 @@ class excelhelper
                         $val = $sheet->getCell($col . $row)->getValue();
                         if (
                             $val !== null &&
+                            is_string($val) &&
                             strpos($val, '\'') === 0 &&
                             is_numeric(str_replace('\'', '', $val)) &&
                             strlen($val) > 10
@@ -346,6 +347,7 @@ class excelhelper
                         $col = Coordinate::stringFromColumnIndex($colIndex);
                         if (
                             $sheet->getCell($col . $row)->getValue() !== null &&
+                            is_string($sheet->getCell($col . $row)->getValue()) &&
                             preg_match('/^(\d|,|\.| )+€$/', $sheet->getCell($col . $row)->getValue())
                         ) {
                             // convert in float

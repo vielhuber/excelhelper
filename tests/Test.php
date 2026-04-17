@@ -188,4 +188,25 @@ class Test extends \PHPUnit\Framework\TestCase
             'bar' => [['foo'], ['bar']]
         ]);
     }
+
+    function test__integer_cell_values()
+    {
+        $data = [
+            ['id', 'name', 'amount'],
+            [1, 'foo', 42],
+            [2, 'bar', 7]
+        ];
+        excelhelper::write([
+            'file' => 'tests/test.xlsx',
+            'data' => $data,
+            'output' => 'save'
+        ]);
+        $this->assertEquals(excelhelper::read([
+            'file' => 'tests/test.xlsx',
+            'first_line' => true,
+            'all_sheets' => false,
+            'friendly_keys' => false,
+            'titles_as_keys' => false
+        ]),  $data);
+    }
 }
