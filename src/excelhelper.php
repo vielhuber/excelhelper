@@ -126,6 +126,7 @@ class excelhelper
         $args = self::prepareWriteArgs($args);
         if ($args['engine'] === 'phpspreadsheet') {
             $spreadsheet = new Spreadsheet();
+            $spreadsheet->getDefaultStyle()->getFont()->setAutoColor(true);
             $sheet = $spreadsheet->getActiveSheet();
 
             if (self::isMultiSheet($args['data'])) {
@@ -188,6 +189,7 @@ class excelhelper
                                 $sheet
                                     ->getStyle($col . $row)
                                     ->getFont()
+                                    ->setAutoColor(false)
                                     ->getColor()
                                     ->setARGB('00' . str_replace('#', '', $data__value__value['color']));
                             }
@@ -382,19 +384,25 @@ class excelhelper
             }
 
             $writer = new Xlsx($spreadsheet);
+            $file = $args['output'] === 'save' ? $args['file'] : tempnam(sys_get_temp_dir(), 'excelhelper');
+            try {
+                $writer->save($file);
+            } catch (\Exception $e) {
+                throw new \Exception($e->getMessage());
+            }
+
+            // strip phpspreadsheet's <auto> marker (not part of the ooxml schema), a font without color is automatic anyway
+            $zip = new \ZipArchive();
+            $zip->open($file);
+            $zip->addFromString('xl/styles.xml', str_replace('<auto val="1"/>', '', $zip->getFromName('xl/styles.xml')));
+            $zip->close();
 
             if ($args['output'] === 'download') {
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
                 header('Content-Disposition: attachment;filename="' . $args['file'] . '"');
                 header('Cache-Control: max-age=0');
-                $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-            }
-            try {
-                $writer->save($args['output'] === 'save' ? $args['file'] : 'php://output');
-            } catch (\Exception $e) {
-                throw new \Exception($e->getMessage());
-            }
-            if ($args['output'] === 'download') {
+                readfile($file);
+                unlink($file);
                 die();
             }
         }
